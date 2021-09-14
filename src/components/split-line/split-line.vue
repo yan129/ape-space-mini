@@ -20,7 +20,7 @@ export default {
 
 <style lang="scss" scoped>
 .title-split {
-  margin: 48rpx 0 28rpx 0;
+  // margin: 48rpx 0 28rpx 0;
   display: flex;
   align-items: center;
   justify-content: center;

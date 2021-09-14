@@ -66,11 +66,23 @@
               maxlength="6"
               v-model="accountInfo.captchCode"
             />
-            <wyb-button class="verify-code-btn" type="hollow" color="#FF7C3C" :radius="['0']" font-size="32" ripple="true" ripple-bg-color="rgba(0,0,0,0.15)" :disabled="verifyCode.normal">获取验证码</wyb-button>
+            <wyb-button
+              class="verify-code-btn"
+              type="hollow"
+              color="#FF7C3C"
+              :radius="['0']"
+              font-size="32"
+              ripple="true"
+              ripple-bg-color="rgba(0,0,0,0.15)"
+              :disabled="verifyCode.normal"
+              >获取验证码</wyb-button
+            >
           </uni-forms-item>
         </uni-forms>
         <view class="login-page-box">
-          <view class="page-switch" @click="clickAccountSwitch()">手机登录</view>
+          <view class="page-switch" @click="clickAccountSwitch()"
+            >手机登录</view
+          >
           <view class="page-regist">注册</view>
         </view>
         <wyb-button
@@ -123,7 +135,17 @@
               maxlength="6"
               v-model="accountInfo.captchCode"
             />
-            <wyb-button class="verify-code-btn" type="hollow" color="#FF7C3C" :radius="['0']" font-size="32" ripple="true" ripple-bg-color="rgba(0,0,0,0.15)" :disabled="verifyCode.normal">获取验证码</wyb-button>
+            <wyb-button
+              class="verify-code-btn"
+              type="hollow"
+              color="#FF7C3C"
+              :radius="['0']"
+              font-size="32"
+              ripple="true"
+              ripple-bg-color="rgba(0,0,0,0.15)"
+              :disabled="verifyCode.normal"
+              >获取验证码</wyb-button
+            >
           </uni-forms-item>
         </uni-forms>
         <view class="login-page-box">
@@ -143,10 +165,7 @@
           >登录</wyb-button
         >
       </view>
-      <!--分割线-->
-      <split-line>
-        <text class="line-content">第三方登录</text>
-      </split-line>
+
       <!-- <wyb-button
         class="regist-btn"
         width="100%"
@@ -160,6 +179,15 @@
         @click="clickMobileSwitch()"
         >注册</wyb-button
       > -->
+    </view>
+    <view class="three-login-box">
+      <!--分割线-->
+      <split-line>
+        <text class="line-content">第三方登录</text>
+      </split-line>
+      <view class="three-icon">
+        <i v-for="(item, index) in threeIcon" :key="index" :class="[item.icon, 'icon']" :style="{color: item.color}"></i>
+      </view>
     </view>
   </view>
 </template>
@@ -185,7 +213,7 @@ export default {
       },
       verifyCode: {
         normal: false,
-        mobile: false
+        mobile: false,
       },
       inputFlag: {
         u1: false,
@@ -194,6 +222,21 @@ export default {
       },
       accountFlag: {
         usernameFlag: false,
+      },
+      threeIcon: {
+        qq: {
+          icon: 'iconfont icon-QQ',
+          color: 'rgb(48,165,221)'
+        },
+        gitee: {
+          icon: 'iconfont icon-gitee-fill-round',
+          color: 'rgb(199,29,35)'
+        },
+        github: {
+          icon: 'iconfont icon-github',
+          color: '#333333'
+        },
+        
       },
       accountInfo: {
         username: "",
@@ -292,7 +335,7 @@ export default {
   justify-content: center;
   flex-direction: column;
   .logo-wrap {
-    height: 320rpx;
+    height: 350rpx;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -325,7 +368,8 @@ export default {
         border-radius: 40rpx;
       }
     }
-    .account-login-card, .mobile-login-card {
+    .account-login-card,
+    .mobile-login-card {
       /deep/ .uni-forms {
         display: block;
         margin-bottom: 20rpx;
@@ -369,33 +413,53 @@ export default {
               bottom: 0rpx;
               padding: 0;
               border: none !important;
-              background-color: rgba(248,248,248,0.8) !important;
+              background-color: rgba(248, 248, 248, 0.8) !important;
             }
           }
         }
       }
     }
   }
-  .login-page-box{
+  .login-page-box {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     margin-bottom: 50rpx;
     color: $normal-color;
-    .page-regist{
+    .page-regist {
       text-decoration: underline;
     }
   }
   .regist-btn {
     margin-top: 30rpx;
   }
-  .line-content{
+  .three-login-box {
+    position: absolute;
+    bottom: 0;
+    height: 20%;
+    width: 100%;
+  }
+  .line-content {
     color: #bfbfbf;
     font-size: 28rpx;
     padding: 0 14rpx;
     font-weight: 500;
   }
+  .three-icon{
+    display: flex;
+    justify-content: space-between;
+    flex-direction: row;
+    width: 300rpx;
+    margin: 30rpx auto 0rpx;
+    .icon{
+      width: 80rpx;
+      height: 80rpx;
+      border-radius: 50%;
+      font-size: 80rpx;
+    }
+  }
 }
+
 .active {
   background-color: $normal-background-color;
   color: #fff;
