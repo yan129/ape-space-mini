@@ -13,6 +13,8 @@ npm run serve
 ### Compiles and minifies for production
 ```
 npm run build
+// 编译到微信平台
+npm run dev:mp-weixin
 ```
 
 ### Customize configuration

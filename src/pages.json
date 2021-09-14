@@ -1,16 +1,83 @@
 {
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		
 		{
-			"path": "pages/index/index",
+			"path": "pages/login/login",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"enablePullDownRefresh": false
 			}
+		},
+		{
+			"path": "pages/main/main",
+			"style": {}
+		},
+		{
+			"path": "pages/publish/publish",
+			"style": {}
+		},
+		{
+			"path": "pages/notice/notice",
+			"style": {}
+		},
+		{
+			"path": "pages/mine/mine",
+			"style": {}
+		},
+		{
+			"path": "pages/notebook/notebook",
+			"style": {}
 		}
 	],
+	"condition": {
+		"current": 0,
+		"list": [
+			{
+				"name": "main",
+				"path": "pages/main/main"
+			},
+			{
+				"name": "login",
+				"path": "pages/login/login"
+			}
+		]
+	},
 	"globalStyle": {
-		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
-		"backgroundColor": "#F8F8F8"
-	}
+		"navigationBarTextStyle": "white",
+		"navigationBarTitleText": "猿空间",
+		"navigationBarBackgroundColor": "#FF7C3C",
+		"backgroundTextStyle": "dark",
+		"backgroundColor": "#F8F8F8",
+		"enablePullDownRefresh": true
+	},
+	"tabBar": {
+		"color": "#bfbfbf",
+		"selectedColor": "#FF7C3C",
+		"borderStyle": "black",
+		"list": [
+		  {
+			"pagePath": "pages/main/main",
+			"text": "猿",
+			"iconPath": "static/icon/首页.png",
+			"selectedIconPath": "static/icon/首页-selector.png"
+		  },
+		  {
+			"pagePath": "pages/publish/publish",
+			"text": "发布",
+			"iconPath": "static/icon/发布.png",
+			"selectedIconPath": "static/icon/发布-selector.png"
+		  },
+		  {
+			"pagePath": "pages/notice/notice",
+			"text": "通知",
+			"iconPath": "static/icon/通知.png",
+			"selectedIconPath": "static/icon/通知-selector.png"
+		  },
+		  {
+			"pagePath": "pages/mine/mine",
+			"text": "我",
+			"iconPath": "static/icon/我的.png",
+			"selectedIconPath": "static/icon/我的-selector.png"
+		  }
+		]
+	  }
 }

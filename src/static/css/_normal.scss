@@ -1,0 +1,15 @@
+/*
+* 初始化字体大小
+*/
+$mini-font-size: 20px;
+$small-font-size: 24px;
+$normal-font-size: 28px;
+$large-font-size: 32px;
+$biggest-font-size: 36px;
+
+$normal-color: #BFBFBF;
+$normal-background-color: #FF7C3C;
+
+:export {
+    theme-color: $normal-color;
+}
