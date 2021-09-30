@@ -21,7 +21,7 @@
 					paddingLeft: labelLeft
 				}"
 			>
-				<text class="uni-error-message-text">{{ showMsg === 'undertext' ? msg : '' }}</text>
+				<text class="uni-error-message-text" style="position: relative; padding-left: 60rpx; top: 4rpx;">{{ showMsg === 'undertext' ? msg : '' }}</text>
 			</view>
 		</view>
 	</view>

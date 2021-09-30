@@ -47,6 +47,7 @@
       </view>
 
       <view class="article-box">文章列表</view>
+      <button @click="loginpage">跳转</button>
     </view>
   </view>
 </template>
@@ -180,6 +181,11 @@ export default {
     durationChange(e) {
       this.duration = e.target.value;
     },
+    loginpage(){
+      uni.navigateTo({
+        url: '../login/login'
+      })
+    }
   },
 };
 </script>

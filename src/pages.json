@@ -2,12 +2,6 @@
 	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
 		
 		{
-			"path": "pages/login/login",
-			"style": {
-				"enablePullDownRefresh": false
-			}
-		},
-		{
 			"path": "pages/main/main",
 			"style": {}
 		},
@@ -26,6 +20,13 @@
 		{
 			"path": "pages/notebook/notebook",
 			"style": {}
+		},
+		{
+			"path": "pages/login/login",
+			"style": {
+				"enablePullDownRefresh": false,
+				"animationType": "none"	//取消动画，仅APP
+			}
 		}
 	],
 	"condition": {

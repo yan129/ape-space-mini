@@ -15,7 +15,11 @@
         >
       </view> -->
       <view class="account-login-card" v-if="pageSwitch === 0">
-        <uni-forms :modelValue="accountInfo">
+        <uni-forms
+          ref="accountLogin"
+          :modelValue="accountInfo"
+          :rules="formRules"
+        >
           <uni-forms-item name="username">
             <span
               class="iconfont icon-shouji"
@@ -66,7 +70,7 @@
               maxlength="6"
               v-model="accountInfo.captchCode"
             />
-            <wyb-button
+            <!-- <wyb-button
               class="verify-code-btn"
               type="hollow"
               color="#FF7C3C"
@@ -74,9 +78,10 @@
               font-size="32"
               ripple="true"
               ripple-bg-color="rgba(0,0,0,0.15)"
-              :disabled="verifyCode.normal"
+              :disabled="verifyCode.normalBtn"
               >获取验证码</wyb-button
-            >
+            > -->
+            <image :src="captchaImg" class="verify-code-img" @click="getCaptchaImg()"></image>
           </uni-forms-item>
         </uni-forms>
         <view class="login-page-box">
@@ -95,19 +100,24 @@
           font-size="36rpx"
           :radius="['40rpx']"
           box-shadow="0 2px 4px 0 rgba(0, 0, 0, 0.1)"
+          @click="login()"
           >登录</wyb-button
         >
       </view>
       <!--手机号登录-->
       <view class="mobile-login-card" v-if="pageSwitch === 1">
-        <uni-forms :modelValue="accountInfo">
+        <uni-forms
+          ref="mobileLogin"
+          :modelValue="mobileInfo"
+          :rules="formRules"
+        >
           <uni-forms-item name="username">
             <span
               class="iconfont icon-shouji"
-              :style="{ color: iconColor.u1 }"
+              :style="{ color: iconColor.u2 }"
             ></span>
             <uni-easyinput
-              :inputFlag="inputFlag.u1"
+              :inputFlag="inputFlag.u2"
               :inputBorder="false"
               :trim="true"
               type="text"
@@ -115,17 +125,17 @@
               clearSize="15"
               :clearable="true"
               maxlength="11"
-              v-model="accountInfo.username"
+              v-model="mobileInfo.username"
             />
           </uni-forms-item>
           <uni-forms-item name="captchCode">
             <span
               class="iconfont icon-yanzhengma"
-              :style="{ color: iconColor.c1 }"
+              :style="{ color: iconColor.c2 }"
             ></span>
             <uni-easyinput
               class="input-verify-code"
-              :inputFlag="inputFlag.c1"
+              :inputFlag="inputFlag.c2"
               :inputBorder="false"
               :trim="true"
               type="text"
@@ -133,7 +143,7 @@
               placeholder="验证码"
               clearSize="15"
               maxlength="6"
-              v-model="accountInfo.captchCode"
+              v-model="mobileInfo.captchCode"
             />
             <wyb-button
               class="verify-code-btn"
@@ -143,8 +153,9 @@
               font-size="32"
               ripple="true"
               ripple-bg-color="rgba(0,0,0,0.15)"
-              :disabled="verifyCode.normal"
-              >获取验证码</wyb-button
+              :disabled="verifyCode.mobileBtn"
+              @click="getRegistryCode()"
+              >{{ secondText }}</wyb-button
             >
           </uni-forms-item>
         </uni-forms>
@@ -162,6 +173,7 @@
           font-size="36rpx"
           :radius="['40rpx']"
           box-shadow="0 2px 4px 0 rgba(0, 0, 0, 0.1)"
+          @click="login2()"
           >登录</wyb-button
         >
       </view>
@@ -186,7 +198,12 @@
         <text class="line-content">第三方登录</text>
       </split-line>
       <view class="three-icon">
-        <i v-for="(item, index) in threeIcon" :key="index" :class="[item.icon, 'icon']" :style="{color: item.color}"></i>
+        <i
+          v-for="(item, index) in threeIcon"
+          :key="index"
+          :class="[item.icon, 'icon']"
+          :style="{ color: item.color }"
+        ></i>
       </view>
     </view>
   </view>
@@ -202,6 +219,8 @@ export default {
   data() {
     return {
       pageSwitch: 0,
+      totalCount: 0,
+      captchaImg: '',
       // tabList: [
       //   { id: "1", name: "账号登录" },
       //   { id: "2", name: "手机登录" },
@@ -210,37 +229,80 @@ export default {
         u1: "#c0c0c0",
         p1: "#c0c0c0",
         c1: "#c0c0c0",
+        u2: "#c0c0c0",
+        c2: "#c0c0c0",
       },
       verifyCode: {
-        normal: false,
-        mobile: false,
+        normalBtn: false,
+        mobileBtn: false,
       },
       inputFlag: {
         u1: false,
         p1: false,
         c1: false,
+        u2: false,
+        c2: false,
       },
       accountFlag: {
         usernameFlag: false,
       },
       threeIcon: {
         qq: {
-          icon: 'iconfont icon-QQ',
-          color: 'rgb(48,165,221)'
+          icon: "iconfont icon-QQ",
+          color: "rgb(48,165,221)",
         },
         gitee: {
-          icon: 'iconfont icon-gitee-fill-round',
-          color: 'rgb(199,29,35)'
+          icon: "iconfont icon-gitee-fill-round",
+          color: "rgb(199,29,35)",
         },
         github: {
-          icon: 'iconfont icon-github',
-          color: '#333333'
+          icon: "iconfont icon-github",
+          color: "#333333",
         },
-        
       },
+      formRules: {
+        username: {
+          rules: [
+            {
+              required: true,
+              errorMessage: "手机号不能为空",
+            },
+            {
+              pattern: "^[1][3,4,5,7,8][0-9]{9}$",
+              errorMessage: "手机号错误",
+            },
+          ],
+        },
+        password: {
+          rules: [
+            {
+              required: true,
+              errorMessage: "密码不能为空",
+            },
+            {
+              minLength: 6,
+              maxLength: 18,
+              errorMessage: "密码长度为{minLength}~{maxLength}个字符",
+            },
+          ],
+        },
+        captchCode: {
+          rules: [
+            {
+              required: true,
+              errorMessage: "验证码不能为空",
+            },
+          ],
+        },
+      },
+      captchaUuid: '',
       accountInfo: {
         username: "",
         password: "",
+        captchCode: ""
+      },
+      mobileInfo: {
+        username: "",
         captchCode: "",
       },
     };
@@ -250,6 +312,17 @@ export default {
     uniFormsItem,
     uniEasyinput,
     uniDataCheckbox,
+  },
+  created(){
+    this.getCaptchaImg();
+  },
+  computed: {
+    // 获取验证码文本
+    secondText() {
+      return this.totalCount !== 0
+        ? `${this.totalCount}秒再次获取`
+        : "点击获取";
+    },
   },
   watch: {
     accountInfo: {
@@ -281,13 +354,104 @@ export default {
       },
       deep: true,
     },
+    mobileInfo: {
+      handler(newVal, oldVal) {
+        if (newVal.username !== null || newVal.username !== "") {
+          this.iconColor.u2 = "#595a78";
+        }
+        if (newVal.username === null || newVal.username === "") {
+          this.iconColor.u2 = "#c0c0c0";
+        }
+        if (newVal.captchCode !== null || newVal.captchCode !== "") {
+          this.iconColor.c2 = "#595a78";
+        }
+        if (newVal.captchCode === null || newVal.captchCode === "") {
+          this.iconColor.c2 = "#c0c0c0";
+        }
+      },
+      deep: true,
+    },
+    // 监控登录方式切换，当切换到账号登录时，更新验证码
+    pageSwitch(newVal, oldVal){
+      if(newVal === 0){
+        this.getCaptchaImg();
+        this.accountInfo.captchCode = '';
+      }
+    }
   },
   methods: {
     clickAccountSwitch() {
       this.pageSwitch = 1;
     },
+
     clickMobileSwitch() {
       this.pageSwitch = 0;
+    },
+
+    // 获取注册码
+    getRegistryCode() {
+      // 按钮60秒倒计时
+      this.verifyCode.mobileBtn = true;
+      this.totalCount = 60;
+      this.getCode(); //下一次60秒才能调用的事件
+      this.interval = setInterval(() => {
+        this.totalCount--;
+        if (this.totalCount === 0) {
+          clearInterval(this.interval);
+          this.verifyCode.mobileBtn = false;
+        }
+      }, 1000);
+    },
+    getCode(){
+      // this.postRequest('/user/getRegisterCode', {phone: this.registryForm.phone});
+    },
+
+    // 获取验证码图片
+    getCaptchaImg(){
+      this.$http.get("/ape-user-server/user/captchaImg", null, {load: false}).then((response) => {
+        this.captchaImg = response.data.data.img;
+        this.captchaUuid = response.data.data.uuid;
+      }).catch((error) => {
+        uni.showToast({title: '验证码加载失败', icon: 'none'})
+      })
+    },
+
+    // 账号密码登录
+    login() {
+      this.$refs.accountLogin
+        .validate()
+        .then((valid) => {
+          this.$$http.post('/ape-user-server/oauth2/login', this.accountInfo, { header: {uuid: this.uuid} }).then((response) => {
+
+          }).catch((error) => {
+            uni.showToast({title: '网络异常', icon: 'none'})
+          })
+        })
+        .catch((error) => {
+          console.log("表单错误信息：", error);
+        });
+    },
+    // 免密登录
+    login2() {
+      this.$refs.mobileLogin
+        .validate()
+        .then((valid) => {
+          //   uni.request({
+          // 	url: 'http://localhost:9531/role/hello',
+          // 	//请求成功后返回
+          // 	success: (res) => {
+          //     console.log(res)
+          // 		// 请求成功之后将数据给Info
+          // 	}
+          // });
+          this.$http.get("/role/hello", {}).then((response) => {
+            console.log(response);
+          });
+          console.log("表单数据信息：", valid);
+        })
+        .catch((error) => {
+          console.log("表单错误信息：", error);
+        });
     },
     decode() {
       const sm2 = require("sm-crypto").sm2;
@@ -400,6 +564,13 @@ export default {
               width: 64% !important;
             }
           }
+          .verify-code-img{
+            position: absolute;
+            right: 0;
+            bottom: 2rpx;
+            height: 98%;
+            width: 36%;
+          }
           .verify-code-btn {
             position: absolute;
             right: 0;
@@ -445,13 +616,13 @@ export default {
     padding: 0 14rpx;
     font-weight: 500;
   }
-  .three-icon{
+  .three-icon {
     display: flex;
     justify-content: space-between;
     flex-direction: row;
     width: 300rpx;
     margin: 30rpx auto 0rpx;
-    .icon{
+    .icon {
       width: 80rpx;
       height: 80rpx;
       border-radius: 50%;
