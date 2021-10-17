@@ -1,6 +1,28 @@
 import request from "./core/request";
+
+/** 请求响应统一拦截 */
+uni.addInterceptor('request', {
+	// 请求前
+	invoke(request) {
+		
+	},
+	// 响应数据处理
+	success(response) {
+		return Promise.resolve(response.data);
+	}, 
+	// 发生错误处理
+	fail(error) {
+	  console.log('interceptor-fail',err)
+	}, 
+	// 完成回调拦截
+	complete(body) {
+	//   console.log('interceptor-complete',response)
+	//   return Promise.resolve(response.data);
+	}
+})
+  
 // 全局配置的请求域名
-let baseUrl = "http://192.168.31.107:9526";
+let baseUrl = "http://192.168.31.107:8001";
 //可以new多个request来支持多个域名请求
 let $http = new request({
 	//接口请求地址

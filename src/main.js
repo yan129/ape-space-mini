@@ -3,7 +3,9 @@ import App from './App'
 import wybButton from '@/components/wyb-button/wyb-button.vue'
 import splitLine from '@/components/split-line/split-line.vue'
 import $http from '../src/static/request/requestConfig'
+import commonJs from './static/js/common.js'
 
+Vue.use(commonJs)
 Vue.component('wyb-button', wybButton)
 Vue.component('split-line', splitLine)
 

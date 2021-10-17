@@ -53,7 +53,7 @@
               v-model="accountInfo.password"
             />
           </uni-forms-item>
-          <uni-forms-item name="captchCode">
+          <uni-forms-item name="captchaCode">
             <span
               class="iconfont icon-yanzhengma"
               :style="{ color: iconColor.c1 }"
@@ -68,7 +68,7 @@
               placeholder="验证码"
               clearSize="15"
               maxlength="6"
-              v-model="accountInfo.captchCode"
+              v-model="accountInfo.captchaCode"
             />
             <!-- <wyb-button
               class="verify-code-btn"
@@ -81,7 +81,7 @@
               :disabled="verifyCode.normalBtn"
               >获取验证码</wyb-button
             > -->
-            <image :src="captchaImg" class="verify-code-img" @click="getCaptchaImg()"></image>
+            <image :src="captchaImg" alt="图片加载失败" class="verify-code-img" @click="getCaptchaImg()"></image>
           </uni-forms-item>
         </uni-forms>
         <view class="login-page-box">
@@ -128,7 +128,7 @@
               v-model="mobileInfo.username"
             />
           </uni-forms-item>
-          <uni-forms-item name="captchCode">
+          <uni-forms-item name="smsCode">
             <span
               class="iconfont icon-yanzhengma"
               :style="{ color: iconColor.c2 }"
@@ -143,7 +143,7 @@
               placeholder="验证码"
               clearSize="15"
               maxlength="6"
-              v-model="mobileInfo.captchCode"
+              v-model="mobileInfo.smsCode"
             />
             <wyb-button
               class="verify-code-btn"
@@ -160,7 +160,7 @@
           </uni-forms-item>
         </uni-forms>
         <view class="login-page-box">
-          <view class="page-switch" @click="clickMobileSwitch()">账号登录</view>
+          <view class="page-switch" @click="clickMobileSwitch()">密码登录</view>
           <view class="page-regist">注册</view>
         </view>
         <wyb-button
@@ -195,7 +195,7 @@
     <view class="three-login-box">
       <!--分割线-->
       <split-line>
-        <text class="line-content">第三方登录</text>
+        <text class="line-content">社交登录</text>
       </split-line>
       <view class="three-icon">
         <i
@@ -203,6 +203,7 @@
           :key="index"
           :class="[item.icon, 'icon']"
           :style="{ color: item.color }"
+          @click="socialLogin(item.name)"
         ></i>
       </view>
     </view>
@@ -248,14 +249,17 @@ export default {
       },
       threeIcon: {
         qq: {
+          name: "qq",
           icon: "iconfont icon-QQ",
           color: "rgb(48,165,221)",
         },
         gitee: {
+          name: "gitee",
           icon: "iconfont icon-gitee-fill-round",
           color: "rgb(199,29,35)",
         },
         github: {
+          name: "github",
           icon: "iconfont icon-github",
           color: "#333333",
         },
@@ -286,7 +290,7 @@ export default {
             },
           ],
         },
-        captchCode: {
+        captchaCode: {
           rules: [
             {
               required: true,
@@ -299,11 +303,11 @@ export default {
       accountInfo: {
         username: "",
         password: "",
-        captchCode: ""
+        captchaCode: ""
       },
       mobileInfo: {
         username: "",
-        captchCode: "",
+        smsCode: "",
       },
     };
   },
@@ -343,11 +347,11 @@ export default {
           this.iconColor.p1 = "#c0c0c0";
           // this.inputFlag.p1 = false;
         }
-        if (newVal.captchCode !== null || newVal.captchCode !== "") {
+        if (newVal.captchaCode !== null || newVal.captchaCode !== "") {
           this.iconColor.c1 = "#595a78";
           // this.inputFlag.c1 = true;
         }
-        if (newVal.captchCode === null || newVal.captchCode === "") {
+        if (newVal.captchaCode === null || newVal.captchaCode === "") {
           this.iconColor.c1 = "#c0c0c0";
           // this.inputFlag.c1 = false;
         }
@@ -362,10 +366,10 @@ export default {
         if (newVal.username === null || newVal.username === "") {
           this.iconColor.u2 = "#c0c0c0";
         }
-        if (newVal.captchCode !== null || newVal.captchCode !== "") {
+        if (newVal.smsCode !== null || newVal.smsCode !== "") {
           this.iconColor.c2 = "#595a78";
         }
-        if (newVal.captchCode === null || newVal.captchCode === "") {
+        if (newVal.smsCode === null || newVal.smsCode === "") {
           this.iconColor.c2 = "#c0c0c0";
         }
       },
@@ -375,7 +379,7 @@ export default {
     pageSwitch(newVal, oldVal){
       if(newVal === 0){
         this.getCaptchaImg();
-        this.accountInfo.captchCode = '';
+        this.accountInfo.captchaCode = '';
       }
     }
   },
@@ -390,6 +394,14 @@ export default {
 
     // 获取注册码
     getRegistryCode() {
+      if (this.$commonJs.isEmpty(this.mobileInfo.username)){
+        uni.showToast({title: '请输入手机号码', icon: 'none'})
+        return;
+      }
+      if (!this.$commonJs.validatePhone(this.mobileInfo.username)){
+        uni.showToast({title: '手机号码不合法', icon: 'none'})
+        return;
+      }
       // 按钮60秒倒计时
       this.verifyCode.mobileBtn = true;
       this.totalCount = 60;
@@ -403,14 +415,19 @@ export default {
       }, 1000);
     },
     getCode(){
-      // this.postRequest('/user/getRegisterCode', {phone: this.registryForm.phone});
+      this.$http.post(`/ape-user/user/sms/${this.mobileInfo.username}`, null, {load: false}).then((response) => {
+        // console.log(response.data);
+      }).catch((error) => {
+        uni.showToast({title: '验证码获取失败', icon: 'none'})
+      })
     },
 
     // 获取验证码图片
     getCaptchaImg(){
-      this.$http.get("/ape-user-server/user/captchaImg", null, {load: false}).then((response) => {
-        this.captchaImg = response.data.data.img;
-        this.captchaUuid = response.data.data.uuid;
+      this.$http.get("/ape-user/user/captchaImg", null, {load: false}).then((response) => {
+        console.log(response)
+        this.captchaImg = response.data.img;
+        this.captchaUuid = response.data.uuid;
       }).catch((error) => {
         uni.showToast({title: '验证码加载失败', icon: 'none'})
       })
@@ -418,11 +435,51 @@ export default {
 
     // 账号密码登录
     login() {
+      // this.decode();
+      // const ecdh = require('ecdh/examples/ecdh');
+      // console.log(ecdh)
+      // var curve = ecdh.getCurve('secp128r1');
+      // const aliceKeys = ecdh.generateKeys(curve);
+      // console.log(aliceKeys)
+
+      // const ecdh = require('create-ecdh');
+      // console.log(ecdh.createECDH())
+      // var curve = ecdh.getCurve('secp128r1');
+      // var curve = ecdh.createECDH;
+      // const aliceKeys = ecdh.generateKeys(curve);
+      // console.log(aliceKeys)
+
+//       const crypto = require('crypto-browserify');
+// const alice = crypto.createECDH('secp256k1');
+// console.log(alice)
+// alice.generateKeys();
+
+// const bob = crypto.createECDH('secp256k1');
+// bob.generateKeys();
+
+// const alicePublicKeyBase64 = alice.getPublicKey().toString('base64');
+// const bobPublicKeyBase64 = bob.getPublicKey().toString('base64');
+
+// const aliceSharedKey = alice.computeSecret(bobPublicKeyBase64, 'base64', 'hex');
+// const bobSharedKey = bob.computeSecret(alicePublicKeyBase64, 'base64', 'hex');
+
+// console.log(aliceSharedKey === bobSharedKey);
+// console.log('Alice shared Key: ', aliceSharedKey);
+// console.log('Bob shared Key: ', bobSharedKey);
+// bufferutil@^4.0.1 utf-8-validate@^5.0.2 @vue/compiler-sfc@^3.0.0-beta.14 canvas@2.5.0 adbkit@^2.11.1 jimp@^0.10.1 node-simctl@^6.1.0 puppeteer@^3.0.1
       this.$refs.accountLogin
         .validate()
         .then((valid) => {
-          this.$$http.post('/ape-user-server/oauth2/login', this.accountInfo, { header: {uuid: this.uuid} }).then((response) => {
-
+          this.$http.post('/ape-user/user/oauth2/captchaLogin', this.accountInfo, { header: {uuid: this.captchaUuid, 'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'} }).then((response) => {
+            if(response.code == 400){
+              uni.showToast({title: response.data, icon: 'none'})
+              // 错误信息为 “账号密码错误” 时，自动刷新验证码
+              if(response.data === '账号密码错误') {
+                this.getCaptchaImg();
+              }
+            }
+            // todo 将token保存
+            console.log(response)
           }).catch((error) => {
             uni.showToast({title: '网络异常', icon: 'none'})
           })
@@ -431,28 +488,38 @@ export default {
           console.log("表单错误信息：", error);
         });
     },
+
     // 免密登录
     login2() {
       this.$refs.mobileLogin
         .validate()
         .then((valid) => {
-          //   uni.request({
-          // 	url: 'http://localhost:9531/role/hello',
-          // 	//请求成功后返回
-          // 	success: (res) => {
-          //     console.log(res)
-          // 		// 请求成功之后将数据给Info
-          // 	}
-          // });
-          this.$http.get("/role/hello", {}).then((response) => {
-            console.log(response);
-          });
-          console.log("表单数据信息：", valid);
+          this.$http.post("/ape-user/user/oauth2/smsLogin", this.mobileInfo, { header: {uuid: this.captchaUuid, 'content-type': 'application/x-www-form-urlencoded;charset=UTF-8'} }).then((response) => {
+            console.log(response.data);
+          }).catch((error) => {
+            uni.showToast({title: '网络异常', icon: 'none'})
+          })
         })
         .catch((error) => {
           console.log("表单错误信息：", error);
         });
     },
+
+    // 社交登录
+    socialLogin(loginType){
+      if(loginType === 'qq'){
+
+      }else if(loginType === 'gitee'){
+        this.$http.get('/ape-user/oauth2/gitee/login', null).then((response) => {
+          console.log(response)
+        }).catch((error) => {
+          uni.showToast({title: '网络异常', icon: 'none'})
+        })
+      }else if(loginType === 'github'){
+
+      }
+    },
+
     decode() {
       const sm2 = require("sm-crypto").sm2;
       const cipherMode = 1;
