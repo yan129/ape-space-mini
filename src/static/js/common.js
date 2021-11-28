@@ -1,7 +1,7 @@
-import Vue from 'vue';
+// import Vue from 'vue';
 
 /* 是否手机号码*/
-const validatePhone = (value) => {
+export const validatePhone = (value) => {
   const reg =/^[1][3,4,5,7,8][0-9]{9}$/;
   if (!reg.test(value) && value != '') {
     return false;
@@ -22,7 +22,7 @@ const validatePhone = (value) => {
 // }
 
 /* 判断值为空 */
-const isEmpty = (value) => {
+export const isEmpty = (value) => {
   // 判断字符串
   if(value === 'undefined' || value === '' || value === 'null'){
     return true;
@@ -38,9 +38,10 @@ const isEmpty = (value) => {
   return false;
 }
 
-export default function (Vue) { 
-  Vue.prototype.$commonJs = {
-    validatePhone,
-    isEmpty
-  }
-}
+
+// export default function (Vue) { 
+//   Vue.prototype.$commonJs = {
+//     validatePhone,
+//     isEmpty
+//   }
+// }

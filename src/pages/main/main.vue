@@ -183,7 +183,7 @@ export default {
     },
     loginpage(){
       uni.navigateTo({
-        url: '../login/login'
+        url: '../login/wxLogin'
       })
     }
   },

@@ -1,8 +1,8 @@
 @font-face {
   font-family: 'iconfont';  /* Project id 2714369 */
-  src: url('//at.alicdn.com/t/font_2714369_uchmqr7thfh.woff2?t=1631542818088') format('woff2'),
-       url('//at.alicdn.com/t/font_2714369_uchmqr7thfh.woff?t=1631542818088') format('woff'),
-       url('//at.alicdn.com/t/font_2714369_uchmqr7thfh.ttf?t=1631542818088') format('truetype');
+  src: url('//at.alicdn.com/t/font_2714369_or5cjiyi0ce.woff2?t=1637673948445') format('woff2'),
+       url('//at.alicdn.com/t/font_2714369_or5cjiyi0ce.woff?t=1637673948445') format('woff'),
+       url('//at.alicdn.com/t/font_2714369_or5cjiyi0ce.ttf?t=1637673948445') format('truetype');
 }
 
 .iconfont {
@@ -11,6 +11,38 @@
   font-style: normal;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+.icon-zujihuitabber:before {
+  content: "\e614";
+}
+
+.icon-liulanjiluzuji:before {
+  content: "\e636";
+}
+
+.icon-setting:before {
+  content: "\e650";
+}
+
+.icon-xiajiantou1:before {
+  content: "\e60c";
+}
+
+.icon-pen:before {
+  content: "\e6be";
+}
+
+.icon-xintubiaogeshi2020_huaban93:before {
+  content: "\e668";
+}
+
+.icon-fankui:before {
+  content: "\e68b";
+}
+
+.icon-youjiantou:before {
+  content: "\e68c";
 }
 
 .icon-github:before {

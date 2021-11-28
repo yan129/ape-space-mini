@@ -192,6 +192,10 @@
         >注册</wyb-button
       > -->
     </view>
+    <!--新版登录方式-->
+                <button v-if="canIGetUserProfile" class='login-btn' type='primary' @click="bindGetUserInfo"> 授权登录 </button>
+                <!--旧版登录方式-->
+                <button v-else class='login-btn' type='primary' open-type="getUserInfo" withCredentials="true" lang="zh_CN" @getuserinfo="bindGetUserInfo"> 授权登录 </button>
     <view class="three-login-box">
       <!--分割线-->
       <split-line>
@@ -222,6 +226,7 @@ export default {
       pageSwitch: 0,
       totalCount: 0,
       captchaImg: '',
+      canIGetUserProfile: false,
       // tabList: [
       //   { id: "1", name: "账号登录" },
       //   { id: "2", name: "手机登录" },
@@ -309,6 +314,7 @@ export default {
         username: "",
         smsCode: "",
       },
+      userInfo: {},
     };
   },
   components: {
@@ -319,6 +325,7 @@ export default {
   },
   created(){
     this.getCaptchaImg();
+    this.setCanIGetUserProfile();
   },
   computed: {
     // 获取验证码文本
@@ -554,6 +561,89 @@ export default {
         { hash: true, der: true }
       );
       console.log(ver2);
+    },
+
+    setCanIGetUserProfile(){
+      if( uni.getUserProfile ){
+        this.canIGetUserProfile = true;
+      }
+    },
+
+    //登录授权
+    bindGetUserInfo(e) {
+      let _this = this;
+      if(this.canIGetUserProfile){
+          //新版登录方式
+          uni.getUserProfile({
+              desc:'登录',
+              success:(res)=>{
+                  console.log(res);
+                  _this.userInfo = res.userInfo;
+                  try {
+                      _this.login();
+                  } catch (e) {}
+              },
+              fail:(res)=>{
+                  console.log(res)
+              }
+          });
+      }else{
+          //旧版登录方式
+          if (e.detail.userInfo) {
+            console.log("=-=-")
+              _this.userInfo = e.detail.userInfo;
+              console.log(_this.userInfo)
+              try {
+                  _this.login();
+              } catch (e) {}
+          } else {
+              console.log('用户拒绝了授权');
+              //用户按了拒绝按钮
+          }
+      }
+    },
+
+    appLoginWx(){
+      let _this = this;
+      // #ifdef MP-WEIXIN
+      uni.getProvider({
+        service: 'oauth',
+        success: function (res) {
+          // 判断服务商等于weixin
+          if (~res.provider.indexOf('weixin')) {
+            uni.login({
+                provider: 'weixin',
+                success: (loginRes) => {
+                  console.log(loginRes)
+                  // 如果是 canIGetUserProfile=true，使用新版登录方式，否则使用旧版
+                  if (_this.canIGetUserProfile){
+                    uni.getUserProfile({
+                      desc: '登录',
+                      provider: 'weixin',
+                      success: (info) => {//这里请求接口
+                          console.log('用户昵称为：' + info.userInfo.nickName);
+                      },
+                      fail: () => {
+                          uni.showToast({title:"微信登录授权失败",icon:"none"});
+                      }
+                    })
+                  }else {
+
+                  }
+                },
+                fail: () => {
+                  uni.showToast({title:"微信登录授权失败",icon:"none"});
+                }
+            })
+          }else{
+              uni.showToast({
+                  title: '请先安装微信或升级版本',
+                  icon:"none"
+              });
+          }
+        }
+      });
+      //#endif
     },
   },
 };

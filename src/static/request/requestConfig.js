@@ -4,10 +4,15 @@ import request from "./core/request";
 uni.addInterceptor('request', {
 	// 请求前
 	invoke(request) {
-		
+
 	},
 	// 响应数据处理
 	success(response) {
+		let data = response.data;
+		if (data.code == 400 && data.data == null){
+			uni.showToast({title: data.message, icon: 'none'})
+			return false;
+		}
 		return Promise.resolve(response.data);
 	}, 
 	// 发生错误处理
@@ -22,7 +27,8 @@ uni.addInterceptor('request', {
 })
   
 // 全局配置的请求域名
-let baseUrl = "http://192.168.31.107:8001";
+// 腾讯云 106.52.169.191
+let baseUrl = "http://127.0.0.1:8001";
 //可以new多个request来支持多个域名请求
 let $http = new request({
 	//接口请求地址

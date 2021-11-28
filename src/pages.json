@@ -15,17 +15,36 @@
 		},
 		{
 			"path": "pages/mine/mine",
-			"style": {}
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationStyle": "custom"
+			}
 		},
 		{
 			"path": "pages/notebook/notebook",
 			"style": {}
 		},
 		{
-			"path": "pages/login/login",
+			"path": "pages/login/wxLogin",
 			"style": {
 				"enablePullDownRefresh": false,
 				"animationType": "none"	//取消动画，仅APP
+			}
+		},
+		{
+			"path": "pages/login/mobileLogin",
+			"style": {
+				"enablePullDownRefresh": false,
+				"animationType": "none"
+			}
+		},
+		{
+			"path": "pages/mine/setting",
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "设置",
+				"animationType": "slide-in-left",
+				"animationDuration": 300
 			}
 		}
 	],
@@ -38,7 +57,7 @@
 			},
 			{
 				"name": "login",
-				"path": "pages/login/login"
+				"path": "pages/login/wxLogin"
 			}
 		]
 	},
@@ -75,7 +94,7 @@
 		  },
 		  {
 			"pagePath": "pages/mine/mine",
-			"text": "我",
+			"text": "我的",
 			"iconPath": "static/icon/我的.png",
 			"selectedIconPath": "static/icon/我的-selector.png"
 		  }
