@@ -10,6 +10,8 @@ import store from './static/js/store.js'
 Vue.component('wyb-button', wybButton)
 Vue.component('split-line', splitLine)
 
+// 挂载全局加密属性，true加密，false不加密
+Vue.prototype.encrypt = true;
 Vue.prototype.$store = store
 Vue.prototype.$commonJs = commonJs
 Vue.prototype.$http = $http;

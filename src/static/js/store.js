@@ -29,6 +29,12 @@ export default new Vuex.Store({
                     uni.navigateBack();
                 }
             })
+        },
+        updateUserInfo(state){
+            let jwtData = uni.getStorageSync('user_info');
+            if (jwtData){
+                state.userInfo = jwtData.userInfo;
+            }
         }
     },
     actions: {

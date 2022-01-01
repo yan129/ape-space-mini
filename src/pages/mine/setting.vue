@@ -1,6 +1,6 @@
 <template>
   <view class="setting-container">
-    <view class="list-item" v-for="(item, index) in listItem" :key="index">
+    <view class="list-item" v-for="(item, index) in listItem" :key="index" @click="jumpPage(item.navigateUrl)">
       <text class="text">{{ item.title }}</text>
       <icon class="iconfont icon-youjiantou"></icon>
     </view>
@@ -12,29 +12,54 @@
 export default {
   data() {
     return {
+      // show: false,
+      url: "",
       listItem: [
         {
           title: "账号与安全",
+          navigateUrl: './setting/accountSecurity'
         },
         {
-          title: "相关设置",
+          title: "主题颜色",
+          navigateUrl: './theme/themeColor'
+        },
+        {
+          title: "用户协议",
+          navigateUrl: ''
+        },
+        {
+          title: "隐私政策",
+          navigateUrl: ''
+        },
+        {
+          title: "意见反馈",
+          navigateUrl: ''
+        },
+        {
+          title: "关于猿空间",
+          navigateUrl: ''
         },
       ],
     };
   },
   methods: {
-      logout(){
-          this.$store.commit('logout');
-      }
-  }
+    jumpPage(navigateUrl){
+      uni.navigateTo({
+        url: navigateUrl
+      })
+    },
+    logout() {
+      this.$store.commit("logout");
+    },
+  },
 };
 </script>
 
 <style lang="scss" scoped>
 @import "../../static/css/iconfont.scss";
 .setting-container {
-    height: 100%;
-    background-color: #f2f2f2;
+  height: 100%;
+  background-color: #f2f2f2;
   .list-item {
     height: 120rpx;
     line-height: 120rpx;
@@ -59,12 +84,12 @@ export default {
       border-bottom: none !important;
     }
   }
-  .logout{
-      height: 120rpx;
-      line-height: 120rpx;
-      margin-top: 20rpx;
-      text-align: center;
-      background-color: #fff;
+  .logout {
+    height: 120rpx;
+    line-height: 120rpx;
+    margin-top: 20rpx;
+    text-align: center;
+    background-color: #fff;
   }
 }
 </style>

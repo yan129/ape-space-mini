@@ -182,9 +182,13 @@ export default {
       this.duration = e.target.value;
     },
     loginpage(){
-      uni.navigateTo({
-        url: '../login/wxLogin'
-      })
+      // uni.navigateTo({
+      //   url: '../login/wxLogin'
+      // })
+      console.log("=====")
+      const crypto = require('crypto');
+      var ming = crypto.createDiffieHellman(512);
+      console.log(ming)
     }
   },
 };

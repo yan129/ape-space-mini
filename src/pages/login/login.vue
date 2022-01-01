@@ -533,8 +533,7 @@ export default {
       let encryptData =
         "04CEB0F05C8318C9915C9180B5BE6BEF533A171A0F6B98A5B12025B7DF0E58FBA25730EDB0560E2DAE902BBA458379B6C14E76F248BB606439285E0D8C2BCEE25D11F6388EF55013ECD587DB6984C7469FD925ABC2E7352341FC9B0794531894CA4365335F0F93EE384C80538142D94C6EAA769BCF6F1A8FD4";
       let keypair = sm2.generateKeyPairHex();
-      console.log("publicKey = " + keypair.publicKey);
-      console.log("privateKey = " + keypair.privateKey);
+
 
       encryptData = sm2.doEncrypt(
         "awc213we123dwadsadsd",

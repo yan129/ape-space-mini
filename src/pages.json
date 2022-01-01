@@ -46,6 +46,24 @@
 				"animationType": "slide-in-left",
 				"animationDuration": 300
 			}
+		},
+		{
+			"path": "pages/mine/setting/accountSecurity",
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "账号与安全",
+				"animationType": "slide-in-left",
+				"animationDuration": 300
+			}
+		},
+		{
+			"path": "pages/mine/clipper",
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "裁剪图片",
+				"animationType": "slide-in-left",
+				"animationDuration": 300
+			}
 		}
 	],
 	"condition": {

@@ -1,10 +1,24 @@
 import request from "./core/request";
 
+const UUID = require('uuid');
+const CryptoJS = require('crypto-js');
+const sm2 = require("sm-crypto").sm2;
+const cipherMode = 1;
+var keypairMap = new Map();
+var uuid;
+
 /** 请求响应统一拦截 */
 uni.addInterceptor('request', {
 	// 请求前
 	invoke(request) {
-
+		if (request.header.encrypt) {
+			uuid = UUID.v4();
+			keypairMap.set(uuid, sm2.generateKeyPairHex());
+			request.header.publicKey = keypairMap.get(uuid).publicKey
+			request.header.sm2uuid = uuid;
+			request.header.browser = 'wx';
+			delete request.header.encrypt;
+		}
 	},
 	// 响应数据处理
 	success(response) {
@@ -13,18 +27,33 @@ uni.addInterceptor('request', {
 			uni.showToast({title: data.message, icon: 'none'})
 			return false;
 		}
+		if (data.encrypt) {
+			let privateKey = keypairMap.get(response.header.sm2uuid).privateKey;
+			// sm2解密获取aesKey
+			let aesKey = sm2.doDecrypt(response.header.aesKey, privateKey, cipherMode);
+			let decryptData = decrypt(data.data, aesKey);
+			response.data.data = JSON.parse(decryptData);
+		}
 		return Promise.resolve(response.data);
 	}, 
 	// 发生错误处理
 	fail(error) {
-	  console.log('interceptor-fail',err)
+		keypairMap.delete(uuid);
 	}, 
 	// 完成回调拦截
 	complete(body) {
-	//   console.log('interceptor-complete',response)
+		keypairMap.delete(uuid);
 	//   return Promise.resolve(response.data);
 	}
 })
+
+//解密方法
+function decrypt(encryptData, key) {
+	let encryptedHexStr = CryptoJS.enc.Hex.parse(encryptData);
+	let encryptedBase64Str = CryptoJS.enc.Base64.stringify(encryptedHexStr);
+	let decrypt = CryptoJS.AES.decrypt(encryptedBase64Str, CryptoJS.enc.Base64.parse(key), { mode: CryptoJS.mode.ECB, padding: CryptoJS.pad.Pkcs7 });
+	return CryptoJS.enc.Utf8.stringify(decrypt).toString();
+}
   
 // 全局配置的请求域名
 // 腾讯云 106.52.169.191
@@ -53,6 +82,25 @@ let $http = new request({
 		isFactory: true
 	}
 });
+
+// 文件上传
+$http.uploadFile = function(url, name, data, filePath){
+	return new Promise((resolve, reject) => {
+		uni.uploadFile({
+			url: baseUrl + url,
+			filePath: filePath || "",
+			name: name || "file",
+			formData: data || "",
+			success: (uploadFileRes) => {
+				resolve(JSON.parse(uploadFileRes.data));
+			},
+			fail(error){
+				uni.showToast({ title: '网络错误', icon: "none" });
+				reject(error)
+			}
+		});
+	})
+}
 
 // 添加获取七牛云token的方法
 $http.getQnToken = function(callback){

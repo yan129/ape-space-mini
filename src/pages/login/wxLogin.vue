@@ -124,6 +124,7 @@ export default {
             },
             { header: {
                 "content-type":"application/x-www-form-urlencoded;charset=UTF-8",
+                "encrypt": _this.encrypt
               },
               load: false,
             },
