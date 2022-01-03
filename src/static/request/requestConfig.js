@@ -27,6 +27,10 @@ uni.addInterceptor('request', {
 			uni.showToast({title: data.message, icon: 'none'})
 			return false;
 		}
+		if (data.status == 500){
+			uni.showToast({title: '服务内部错误', icon: 'none'})
+			return response.data;
+		}
 		if (data.encrypt) {
 			let privateKey = keypairMap.get(response.header.sm2uuid).privateKey;
 			// sm2解密获取aesKey

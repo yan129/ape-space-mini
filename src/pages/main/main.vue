@@ -155,7 +155,12 @@ export default {
     };
   },
   //生命周期 - 开始加载
-  onLoad() {},
+  onReady() {
+    this.$commonJs.setNavigationBarColor();
+  },
+  onShow(){
+    this.$commonJs.setNavigationBarColor();
+  },
   //方法入口
   methods: {
     change(e) {
@@ -185,10 +190,6 @@ export default {
       // uni.navigateTo({
       //   url: '../login/wxLogin'
       // })
-      console.log("=====")
-      const crypto = require('crypto');
-      var ming = crypto.createDiffieHellman(512);
-      console.log(ming)
     }
   },
 };

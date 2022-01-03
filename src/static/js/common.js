@@ -1,7 +1,7 @@
-// import Vue from 'vue';
+import styles from '../../uni.scss';
 
 /* 是否手机号码*/
-export const validatePhone = (value) => {
+const validatePhone = (value) => {
   const reg =/^[1][3,4,5,7,8][0-9]{9}$/;
   if (!reg.test(value) && value != '') {
     return false;
@@ -22,7 +22,7 @@ export const validatePhone = (value) => {
 // }
 
 /* 判断值为空 */
-export const isEmpty = (value) => {
+const isEmpty = (value) => {
   // 判断字符串
   if(value === 'undefined' || value === '' || value === 'null'){
     return true;
@@ -38,10 +38,15 @@ export const isEmpty = (value) => {
   return false;
 }
 
+const setNavigationBarColor = () => {
+  uni.setNavigationBarColor({
+    frontColor: '#ffffff',
+    backgroundColor: styles.themeColor
+  })
+}
 
-// export default function (Vue) { 
-//   Vue.prototype.$commonJs = {
-//     validatePhone,
-//     isEmpty
-//   }
-// }
+export default {
+  validatePhone,
+  isEmpty,
+  setNavigationBarColor
+}

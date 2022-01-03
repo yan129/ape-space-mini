@@ -61,12 +61,14 @@
         asd
       </view>
     </view> -->
-    <bottom-popup style="width:100%; height: 100%; position: fixed; bottom: -100%; background-color: transparent; z-index: 100;"
+    <bottom-popup class="bottom-popup" style="width:100%; height: 100%; position: fixed; bottom: -100%; background-color: transparent; z-index: 100;"
       v-on:closePopup="closePopupAnimation()"
       :animation="animationData" 
       @touchmove.stop.prevent=""
     >
-      asda
+      <scroll-view scroll-y="true" :style="{ height: scrollViewHeight }">
+        <view v-for="(item, index) in 50" :key="index">{{ item }}</view>
+      </scroll-view>
     </bottom-popup>
   </view>
 </template>
@@ -79,6 +81,7 @@ import bottomPopup from '../../components/custom/bottom-popup.vue';
         // isLogin: false,
         // 初始化动画实例
         animationData: {},
+        scrollViewHeight: '',
         // 背景图片
         backImg: '',
         selectorCard: {
@@ -137,7 +140,13 @@ import bottomPopup from '../../components/custom/bottom-popup.vue';
     //生命周期 - 开始加载
     onLoad() {
       // 创建动画实例
-      this.animation = uni.createAnimation()
+      this.animation = uni.createAnimation();
+      let bottomPopupDom = uni.createSelectorQuery().select(".bottom-popup");
+      bottomPopupDom
+        .boundingClientRect((dom) => {
+          this.scrollViewHeight = (dom.height * 0.69 - 30) + "px";
+        })
+      .exec();
     },
     onUnload() {
       // 页面关闭后清空数据

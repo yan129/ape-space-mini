@@ -10,9 +10,14 @@
       <text class="nickname">{{ userInfo.nickname }}</text>
       <icon class="iconfont icon-youjiantou"></icon>
     </view>
-    <view class="list-item">
+    <view class="list-item" v-if="!$commonJs.isEmpty(userInfo) && !userInfo.hasOwnProperty('loginType')">
       <text class="text">账号</text>
       <text class="username">{{ userInfo.username }}</text>
+      <icon class="iconfont icon-youjiantou"></icon>
+    </view>
+    <view class="list-item" v-else>
+      <text class="text">手机号</text>
+      <text class="username">{{ userInfo.phone != null ? userInfo.phone : '绑定' }}</text>
       <icon class="iconfont icon-youjiantou"></icon>
     </view>
     <view class="list-item remark-item">

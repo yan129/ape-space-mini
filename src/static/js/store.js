@@ -1,5 +1,6 @@
 import Vue from "vue";
 import Vuex from 'vuex';
+import styles from '../../uni.scss';
 
 Vue.use(Vuex);
 
@@ -10,12 +11,16 @@ export default new Vuex.Store({
     },
     mutations: {
         login(state, jwtData){
+            // 设置登录类型，用于账号与安全的账号判断显示
+            jwtData.userInfo.loginType = 'wx';
             uni.setStorage({
                 key: 'user_info',
                 data: jwtData,
                 success: function () {
                     state.loginStatus = true;
                     state.userInfo = jwtData.userInfo;
+                    // 设置登录用户的主题颜色
+                    styles.themeColor = jwtData.userInfo.themeColor;
                     uni.navigateBack();
                 }
             })
@@ -30,10 +35,17 @@ export default new Vuex.Store({
                 }
             })
         },
-        updateUserInfo(state){
+        updateUserInfo(state, userInfo){
             let jwtData = uni.getStorageSync('user_info');
             if (jwtData){
-                state.userInfo = jwtData.userInfo;
+                jwtData.userInfo = userInfo;
+                uni.setStorage({
+                    key: 'user_info',
+                    data: jwtData,
+                    success: function () {
+                        state.userInfo = jwtData.userInfo;
+                    }
+                })
             }
         }
     },
