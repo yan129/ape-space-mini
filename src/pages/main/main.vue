@@ -156,7 +156,7 @@ export default {
   },
   //生命周期 - 开始加载
   onReady() {
-    this.$commonJs.setNavigationBarColor();
+    
   },
   onShow(){
     this.$commonJs.setNavigationBarColor();

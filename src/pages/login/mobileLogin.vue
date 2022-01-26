@@ -82,7 +82,6 @@ import { uniForms } from "../../components/uni-forms/uni-forms.vue";
 import { uniFormsItem } from "../../components/uni-forms-item/uni-forms-item.vue";
 import { uniEasyinput } from "../../components/uni-easyinput/uni-easyinput.vue";
 import { uniDataCheckbox } from "../../components/uni-data-checkbox/uni-data-checkbox.vue";
-import styles from "../../uni.scss";
 export default {
   data() {
     return {

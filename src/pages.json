@@ -1,5 +1,5 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [
 		
 		{
 			"path": "pages/main/main",
@@ -28,7 +28,7 @@
 			"path": "pages/login/wxLogin",
 			"style": {
 				"enablePullDownRefresh": false,
-				"animationType": "none"	//取消动画，仅APP
+				"animationType": "none"
 			}
 		},
 		{
@@ -36,6 +36,15 @@
 			"style": {
 				"enablePullDownRefresh": false,
 				"animationType": "none"
+			}
+		},
+		{
+			"path": "pages/mine/creation",
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "创作中心",
+				"animationType": "slide-in-left",
+				"animationDuration": 300
 			}
 		},
 		{
@@ -66,6 +75,24 @@
 			}
 		}
 	],
+	"subPackages": [
+		{
+			"root": "pagesA",
+			"name": "pagesA",
+			"pages": [
+				{
+					"path": "editor/editor",
+					"style": {}
+				}
+			]
+		}
+	],
+	// "preloadRule": {
+		// "pageA/markdown/markdown": {
+		// 	"network": "all",
+		// 	"packages": ["pagesA"]
+		// }
+	// },
 	"condition": {
 		"current": 0,
 		"list": [
@@ -117,5 +144,5 @@
 			"selectedIconPath": "static/icon/我的-selector.png"
 		  }
 		]
-	  }
+	}
 }

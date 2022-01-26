@@ -35,6 +35,9 @@ export default {
       
     };
   },
+  onShow(){
+    this.$commonJs.setNavigationBarColor();
+  },
   computed: {
     userInfo() {
       return this.$store.getters.getUserInfo;

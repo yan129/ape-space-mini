@@ -51,6 +51,7 @@
           <view>asd</view>
           <view>asd</view>
           <view>asd</view>
+          <pre>asdadw</pre>
         </view>
       </view>
     </view>
@@ -111,7 +112,7 @@ import bottomPopup from '../../components/custom/bottom-popup.vue';
             icon: 'icon-pen',
             text: '创作中心',
             callPopup: false,
-            navigateUrl: ''
+            navigateUrl: './creation'
           },
           {
             icon: 'icon-zujihuitabber',

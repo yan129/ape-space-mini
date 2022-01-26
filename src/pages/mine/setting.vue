@@ -96,7 +96,6 @@ export default {
   },
   //生命周期 - 开始加载
   onLoad() {
-    this.$commonJs.setNavigationBarColor();
     // 创建动画实例
     this.animation = uni.createAnimation();
     let bottomPopupDom = uni.createSelectorQuery().select(".bottom-popup");
@@ -153,7 +152,7 @@ export default {
     confirm(e){
       let hexColor = e.hex;
       let oldColorActive = this.colorActive;
-      if (this.$commonJs.isEmpty(this.userInfo.id)) {
+      if (this.$commonJs.isEmpty(this.userInfo)) {
         uni.showToast({title: '请先登录', icon: 'none'})
         return;
       }
@@ -204,7 +203,7 @@ export default {
         return;
       }
       this.colorActive = index;
-      if (this.$commonJs.isEmpty(this.userInfo.id)) {
+      if (this.$commonJs.isEmpty(this.userInfo)) {
         uni.showToast({title: '请先登录', icon: 'none'})
         return;
       }
