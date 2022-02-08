@@ -4,6 +4,7 @@
         <view class="item"></view>
       </view>
       <view class="operate-box">
+          <view class="select-card"></view>
           <text class="select-topic" :style="{color: styles.themeColor}">切换 随笔</text>
       </view>
 
@@ -102,11 +103,23 @@ export default {
             height: 180rpx;
             display: flex;
             flex-direction: column;
-            background: linear-gradient(transparent, red);
             z-index: 100;
+            .select-card{
+                width: 70%;
+                height: 120rpx;
+                margin: 0 auto;
+                margin-bottom:  80rpx;
+                border-radius: 60rpx;
+                background: red;
+            }
             .select-topic{
+                width: 100%;
+                position: absolute;
+                bottom: 0;
+                line-height: 80rpx;
                 font-size: 24rpx;
                 text-align: center;
+                color: #9e9e9e;
             }
         }
     }
