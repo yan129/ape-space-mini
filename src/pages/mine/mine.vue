@@ -115,6 +115,12 @@ import bottomPopup from '../../components/custom/bottom-popup.vue';
             navigateUrl: './creation'
           },
           {
+            icon: 'icon-tag',
+            text: '专题管理',
+            callPopup: false,
+            navigateUrl: './theme'
+          },
+          {
             icon: 'icon-zujihuitabber',
             text: '历史足迹',
             callPopup: true

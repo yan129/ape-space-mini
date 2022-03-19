@@ -51,7 +51,7 @@ export default {
         background: #fff;
         position: absolute;
         bottom: 0;
-        border-radius: 40rpx 40rpx 0 0;
+        // border-radius: 40rpx 40rpx 0 0;
         box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.3);
         .action{ 
           width: 100%;

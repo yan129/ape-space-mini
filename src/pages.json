@@ -48,6 +48,15 @@
 			}
 		},
 		{
+			"path": "pages/mine/theme",
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "专题管理",
+				"animationType": "slide-in-left",
+				"animationDuration": 300
+			}
+		},
+		{
 			"path": "pages/mine/setting",
 			"style": {
 				"enablePullDownRefresh": false,

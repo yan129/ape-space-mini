@@ -24,7 +24,7 @@ const validatePhone = (value) => {
 /* 判断值为空 */
 const isEmpty = (value) => {
   // 判断字符串
-  if(value === 'undefined' || value === '' || value === 'null' || value === null){
+  if(value === 'undefined' || value === '' || value === 'null' || value === null || value === undefined){
     return true;
   }
   // 判断数组

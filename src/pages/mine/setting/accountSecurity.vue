@@ -79,7 +79,7 @@ export default {
     },
     toClipperPage() {
       uni.navigateTo({
-        url: "/pages/mine/clipper",
+        url: "/pages/mine/clipper?type=avatar",
       });
     },
   },

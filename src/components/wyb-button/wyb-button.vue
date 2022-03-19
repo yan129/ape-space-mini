@@ -1,5 +1,5 @@
 <template>
-	<view :style="{
+	<view class="wyb-btn-box" :style="{
 			width: width,
 			height: height,
 			backgroundColor: disabled && type !== 'hollow' ? '#ffffff' : 'rgba(0, 0, 0, 0)',
