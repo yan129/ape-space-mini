@@ -6,9 +6,10 @@
         :empty-view-img="emptyDataImg" :empty-view-center="false" :empty-view-img-style="emptyDataImgStyle" :lower-threshold="5" 
         :loading-more-no-more-text="'我可是有底线的'"
         :hide-loading-more-when-no-more-and-inside-of-paging="true"
+        :show-refresher-update-time="true"
         :hide-loading-more-when-no-more-by-limit="11"
         :default-page-size="10"
-        v-model="articleTitleList" @query="queryList" :height="scrollViewHeight">
+        v-model="articleTitleList" :height="scrollViewHeight">
         <uni-swipe-action>
           <view class="item" v-for="(item, index) in articleTitleList" :key="index">
             <uni-swipe-action-item style="width: 100%;" :right-options="options" :threshold="60"  @click="bindClickItem($event, index)" @change="swipeChange($event, index)">
@@ -19,7 +20,7 @@
                 <view class="content-box">
                   <view class="left-box">
                     <view class="title">{{ item.title }}</view>
-                    <view class="create-date">{{ item.date }}</view>
+                    <view class="create-date">{{ item.gmtCreated }}</view>
                   </view>
                   <view class="right-box">
                     <icon class="iconfont icon-setting2"></icon>
@@ -38,6 +39,7 @@
           v-for="(item, index) in cardText"
           :key="index"
           :style="[index === 1 ? { backgroundColor: styles.themeColor, color: '#FFF', borderRadius: '40rpx' } : {color: styles.themeColor}]"
+          @click="tapSelect(item.text)"
           >
             <icon :class="['iconfont', item.icon]"></icon>
             {{ item.text }}
@@ -51,14 +53,10 @@
       </view>
     </view>
 
-    <!-- <ly-markdown :showPreview="true" :textareaData.sync="textareaData" :textareaHtml.sync="textareaHtml"></ly-markdown>
-      <towxml :nodes="content"></towxml> -->
   </view>
 </template>
 
 <script>
-// import lyMarkdown from '../../components/markdown/ly-markdown.vue';
-// import towxml from '../../static/towxml/towxml';
 import styles from "../../uni.scss";
 import uniSwipeAction from "../../components/uni-swipe-action/uni-swipe-action.vue";
 import uniSwipeActionItem from "../../components/uni-swipe-action-item/uni-swipe-action-item.vue";
@@ -96,12 +94,7 @@ export default {
         }
       ],
       // 专题列表数据
-      themeList: [
-        {id: '12123', name: '中国'},
-        {id: '5252', name: '美国'},
-        {id: '7474', name: '俄罗斯'},
-        {id: '235423', name: '巴西'}
-      ],
+      themeList: [],
       scrollViewHeight: "",
       content: {},
       textareaData: "",
@@ -134,36 +127,26 @@ export default {
     uniSwipeAction,
     uniSwipeActionItem,
     zPaging
-    // lyMarkdown,
-    // towxml,
   },
-  watch: {
-    // "textareaData":function(){
-    //     this.content = this.towxmlFunc(this.textareaData, 'markdown',{
-    // 	    base:'https://xxx.com',	  // 相对资源的base路径
-    // 	    theme:'light',	// 主题，默认`light`, dark
-    // 	    events:{	// 为元素绑定的事件方法
-    // 	    	tap:(e)=>{
-    // 	    		console.log('tap',e);
-    // 	    	}
-    // 	    }
-    //     });
-    //     console.log("=========")
-    //     console.log(this.content)
-    //     console.log("=========")
-    // 	// console.log("markdown:"+this.textareaData)
-    // 	// console.log("html:"+this.textareaHtml)
-    // },
+  created(){
+    this.initThemeListData();
   },
   computed: {
     styles(){
       return styles;
+    },
+    userInfo(){
+      return this.$store.getters.getUserInfo;
     }
   },
   methods: {
     bindClickItem(e, index){
-      console.log('点击了'+(e.position === 'left' ? '左侧' : '右侧') + e.content.text + '按钮')
-      if (e.position == 'right') {
+      if (e.content.text == '编辑') {
+        uni.redirectTo({
+          url: `../../pagesA/editor/editor?id=${this.articleTitleList[index].id}`,
+        });
+      }
+      if (e.content.text == '删除') {
         var _this = this;
         uni.showModal({
             title: this.articleTitleList[index].title,
@@ -184,49 +167,55 @@ export default {
     swipeChange(e,index){
       console.log('当前状态：'+ e +'，下标：' + index)
     },
-    
-    queryList(pageNo, pageSize) {
-          for (var i = 0; i < 20; i++) {
-            if(i / 2 == 0) {
-              this.articleTitleList.push({
-              title:"瓶身描绘的牡丹一如你初妆, 冉冉檀香透过窗心事我了然, 宣纸上走笔至此搁一半",
-              id:i,
-              date: '2022-03-06'
-              })
-            }else if(i / 2 == 1){
-              this.articleTitleList.push({
-              title:"哈哈哈",
-              id:i,
-              date: '2022-03-09'
-              })
-            }
-          }
-          if (this.articleTitleList.length >=40) {
-            return;
-          }
-          setTimeout(() => {
-            this.$refs.paging.complete(this.articleTitleList);
-          }, 100);
-              	//这里的pageNo和pageSize会自动计算好，直接传给服务器即可
-              	//这里的请求只是演示，请替换成自己的项目的网络请求，并在网络请求回调中通过this.$refs.paging.complete(请求回来的数组)将请求结果传给z-paging
-                // this.$request.queryList({ pageNo,pageSize }).then(res => {
-                // 	//请勿在网络请求回调中给dataList赋值！！只需要调用complete就可以了
-                	// this.$refs.paging.complete(res.data.list);
-                // }).catch(res => {
-                // 	//如果请求失败写this.$refs.paging.complete(false)，会自动展示错误页面
-                // 	//注意，每次都需要在catch中写这句话很麻烦，z-paging提供了方案可以全局统一处理
-                // 	//在底层的网络请求抛出异常时，写uni.$emit('z-paging-error-emit');即可
-                // 	this.$refs.paging.complete(false);
-                // })
-            },
+    // 初始化文章列表数据
+    initArticleListData() {
+      this.$http.get('/ape-article/article/searchArticleList', {uid: this.userInfo.id, tid: this.themeList[this.themeIndex].id}, {load: false}).then((response) => {
+        // 本地分页
+        this.$refs.paging.setLocalPaging(response.data);
+      }).catch((error) => {
+        this.$refs.paging.setLocalPaging(false);
+        uni.showToast({ title: '请检查网络', icon: "none" });
+      })
+    },
 
+    // 跳转编辑页
+    tapSelect(text){
+      if (text === "新建文章") {
+        // redirectTo跳转到分包页面
+        uni.redirectTo({
+          // url: "/pages/mine/creation/editor",
+          url: '../../pagesA/editor/editor',
+        });
+      }
+    },
+    // 初始化专题数据
+    initThemeListData(){
+      this.$http.get(`/ape-article/theme/searchAll/${this.userInfo.id}`, null, {load: false}).then((response) => {
+        // 初始化页面时，从缓存读取 themeIndex
+        let cacheThemeIndex = uni.getStorageSync('themeIndex');
+        if (!this.$commonJs.isEmpty(cacheThemeIndex)){
+          this.themeIndex = cacheThemeIndex;
+        }
+        this.themeList = response.data;
+        // 初始化文章列表数据
+        this.initArticleListData();
+      }).catch((error) => {
+        uni.showToast({ title: '请检查网络', icon: "none" });
+      })
+    },
     // 专题选中方法
     bindPickerChange: function(e, storage) {
-        console.log(e)
-        console.log(storage)
-        this.themeIndex = e.target.value
-        this.pickerThemeData = storage[this.themeIndex];
-        console.log(this.pickerThemeData)
+      let _this = this;
+      this.themeIndex = e.target.value
+      this.pickerThemeData = storage[this.themeIndex];
+      // 将专题下标设置到缓存，下次直接取出来
+      uni.setStorage({
+          key: 'themeIndex',
+          data: e.target.value,
+          success: function () {
+            _this.initArticleListData();
+          }
+      })
     },
     // 加载数据
     // load(paging) {

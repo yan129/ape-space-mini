@@ -43,6 +43,15 @@ uni.addInterceptor('request', {
 	// 发生错误处理
 	fail(error) {
 		keypairMap.delete(uuid);
+		uni.getNetworkType({
+			success: function (res) {
+				if (res.networkType === 'none') {
+					uni.showToast({ title: '网络连接失败', icon: "none" });
+					return;
+				}
+			}
+		});
+		uni.showToast({title: '服务内部错误', icon: 'none'});
 	}, 
 	// 完成回调拦截
 	complete(body) {
@@ -61,7 +70,7 @@ function decrypt(encryptData, key) {
   
 // 全局配置的请求域名
 // 腾讯云 106.52.169.191
-let baseUrl = "http://127.0.0.1:8001";
+let baseUrl = "http://192.168.1.43:8001";
 //可以new多个request来支持多个域名请求
 let $http = new request({
 	//接口请求地址

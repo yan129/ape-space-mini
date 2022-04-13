@@ -1,5 +1,6 @@
 let hljs;
 hljs = require('../highlight/index');
+// import hljs from "highlight.js";
 
 const config = require('../../config'),
     mdOption = (()=>{
@@ -12,8 +13,14 @@ const config = require('../../config'),
 
         if(config.highlight.length && hljs){
             result.highlight = (code,lang,callback)=>{
-                let lineLen = code.split(/\r|\n/ig).length,
-                    result = hljs.highlightAuto(code).value;
+                let lineLen = code.split(/\r|\n/ig).length;
+                    // result = hljs.highlightAuto(code).value;
+
+                    if (lang && hljs.getLanguage(lang)) {
+                        result = hljs.highlight(lang, code, true).value;
+                    } else {
+                        result = hljs.highlightAuto(code).value;
+                    }
 
                     // 代码块多换行的问题
                     result = result.replace(/(\r|\n){2,}/g, str => {

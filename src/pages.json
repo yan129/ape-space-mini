@@ -48,6 +48,15 @@
 			}
 		},
 		{
+			"path": "pages/mine/creation/editor",
+			"style": {
+				"enablePullDownRefresh": false,
+				"navigationBarTitleText": "创作台",
+				"animationType": "slide-in-left",
+				"animationDuration": 300
+			}
+		},
+		{
 			"path": "pages/mine/theme",
 			"style": {
 				"enablePullDownRefresh": false,
@@ -91,7 +100,12 @@
 			"pages": [
 				{
 					"path": "editor/editor",
-					"style": {}
+					"style": {
+						"enablePullDownRefresh": false,
+						"navigationBarTitleText": "创作台",
+						"animationType": "slide-in-left",
+						"animationDuration": 300
+					}
 				}
 			]
 		}

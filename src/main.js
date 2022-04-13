@@ -15,7 +15,7 @@ Vue.prototype.encrypt = true;
 Vue.prototype.$store = store
 Vue.prototype.$commonJs = commonJs
 Vue.prototype.$http = $http;
-Vue.prototype.towxmlFunc = require('./static/towxml/index.js');
+Vue.prototype.towxmlFunc = require('./pagesA/static/towxml/index.js');
 Vue.config.productionTip = false
 
 App.mpType = 'app'

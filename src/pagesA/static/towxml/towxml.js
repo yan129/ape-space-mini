@@ -12,5 +12,5 @@ Component({
     someData:{
       
     }
-  }
+  },
 })

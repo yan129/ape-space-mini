@@ -4,6 +4,7 @@
             :empty-view-img="emptyDataImg" :empty-view-center="false" :empty-view-img-style="emptyDataImgStyle" :lower-threshold="5" 
             :loading-more-no-more-text="'我可是有底线的'"
             :hide-loading-more-when-no-more-and-inside-of-paging="true"
+            :show-refresher-update-time="true"
             :hide-loading-more-when-no-more-by-limit="11"
             :default-page-size="10"
             v-model="themeleList" @query="queryList">
@@ -11,7 +12,7 @@
               <view class="item" v-for="(item, index) in themeleList" :key="index">
                 <uni-swipe-action-item style="width: 100%;" :right-options="options" :threshold="60"  @click="bindClickItem($event, index)" @change="swipeChange($event, index)">
                   <view class="warpper-box">
-                    <image class="theme-img" :lazy-load="true" :src="item.picture"></image>
+                    <image class="theme-img" :lazy-load="true" :src="item.picture" @click.stop="previewImg(index)"></image>
                     <view class="content-box">
                         <view class="describle-box">
                             <view class="title">{{ item.name }}</view>
@@ -69,7 +70,7 @@
                       />
                     </uni-forms-item>
                 </uni-forms>
-                <view class="select-img" v-if="themeInfo.picture == ''" @click="toClipperPage()">
+                <view class="select-img" v-if="$commonJs.isEmpty(themeInfo.picture)" @click="toClipperPage()">
                     <icon class="iconfont icon-xiangji1"></icon>
                     <text class="text">选择封面图片</text>
                 </view>
@@ -136,7 +137,7 @@ export default {
                     }
                 }
             ],
-            themeleList: [{title: '随笔', date: '2022-03-12'}],
+            themeleList: [],
             // 初始化动画实例
             animationData: {},
             scrollViewHeight: '',
@@ -240,12 +241,41 @@ export default {
         swipeChange(e,index){
             console.log('当前状态：'+ e +'，下标：' + index)
         },
+        // 预览图片
+        previewImg(index){
+            let images = [];
+            images[0] = this.themeleList[index].picture;
+            uni.previewImage({
+                current: 0,
+                urls: images,
+                longPressActions: {
+                    //长按保存图片到相册
+                    itemList: ["保存图片"],
+                    success: (data) => {
+                        uni.saveImageToPhotosAlbum({
+                            //保存图片到相册
+                            filePath: path,
+                            success: function () {
+                                uni.showToast({ icon: "success", title: "保存成功" });
+                            },
+                            fail: (err) => {
+                                uni.showToast({ icon: "none", title: "保存失败，请重新尝试" });
+                            },
+                        });
+                    },
+                    fail: (err) => {
+                        console.log(err.errMsg);
+                    },
+                },
+            });
+        },
         // 查询所有专题
         queryList(pageNo, pageSize) {
             this.$http.get(`/ape-article/theme/searchAll/${this.userInfo.id}`, null, {load: false}).then((response) => {
                 this.$refs.paging.complete(response.data);
             }).catch((error) => {
-                uni.showToast({ title: '请检查网络', icon: "none" });
+                this.$refs.paging.complete(false);
+                uni.showToast({title: '服务内部错误', icon: 'none'});
             })
             
         },
@@ -270,7 +300,7 @@ export default {
                     return;
                 }
                 // 新增
-                if (this.$commonJs.isEmpty(this.themeInfo.id)) {
+                if (this.$commonJs.isEmpty(this.currentUploadThemeIndex)) {
                     this.themeInfo.uid = this.userInfo.id;
                     this.$http.post('/ape-article/theme/create', JSON.stringify(this.themeInfo), {header: {"content-type":"application/json;charset=UTF-8"}, load: false}).then((response) => {
                         if (response.success) {
@@ -299,7 +329,7 @@ export default {
               console.log("表单错误信息：", error);
             });
         },
-        // 删除专题
+        // 删除专题图片
         deleteThemeImg(){
             this.$http.delete('/ape-article/theme/deleteCoverImg', {url: this.themeInfo.picture}, {header: {"content-type":"application/x-www-form-urlencoded;charset=UTF-8"}, load: false})
                 .then((response) => {

@@ -2,8 +2,8 @@
   <view class="popup-container" @click="closePopup()">
     <!--@click.stop="" 阻止点击冒泡-->
     <view class="popup" @click.stop="">
-        <view class="action">
-          <icon class="iconfont icon-close" @click="closePopup()"></icon>
+        <view class="action" :style="{'background-color': (editTheme == 'light' ? '#fff' : '#000')}">
+          <icon class="iconfont icon-close" @click="closePopup()" :style="{'color': (editTheme == 'light' ? '#333' : '#fff')}"></icon>
         </view>
         <slot></slot>
     </view>
@@ -12,6 +12,13 @@
 
 <script>
 export default {
+  props: {
+    // 该参数用于编辑文章时改变主题
+    editTheme: {
+      type: String,
+			default: 'light'
+    }
+  },
   data() {
     return {
         // 初始化动画实例
