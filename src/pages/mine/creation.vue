@@ -190,7 +190,7 @@ export default {
     },
     // 初始化专题数据
     initThemeListData(){
-      this.$http.get(`/ape-article/theme/searchAll/${this.userInfo.id}`, null, {load: false}).then((response) => {
+      this.$http.get(`/ape-article/theme/searchAll/${this.userInfo.id}`, null, {header: {'transferToken': true}, load: false}).then((response) => {
         // 初始化页面时，从缓存读取 themeIndex
         let cacheThemeIndex = uni.getStorageSync('themeIndex');
         if (!this.$commonJs.isEmpty(cacheThemeIndex)){

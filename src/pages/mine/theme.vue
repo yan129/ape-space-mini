@@ -271,6 +271,12 @@ export default {
         },
         // 查询所有专题
         queryList(pageNo, pageSize) {
+            this.$http.get(`/ape-article/theme/AA`, null, {load: false}).then((response) => {
+                console.log(response)
+            }).catch((error) => {
+                
+            })
+            console.log("==============")
             this.$http.get(`/ape-article/theme/searchAll/${this.userInfo.id}`, null, {load: false}).then((response) => {
                 this.$refs.paging.complete(response.data);
             }).catch((error) => {

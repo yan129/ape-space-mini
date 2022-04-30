@@ -74,7 +74,7 @@ Component({
 			if (JSON.stringify(e.currentTarget.dataset) !== '{}') {
 				let codeArrayValue = new Array();
 				let className = e.currentTarget.dataset.data.attrs.class;
-				if (className.includes("h2w__code language") || className.includes("h2w__span hljs-attribute")) {
+				if (className.includes("h2w__code language") || className.includes("h2w__span") || className.includes("h2w__p") || className.includes("h2w__lineNum")) {
 					let childrens = e.currentTarget.dataset.data.children;
 					if (childrens.length > 0) {
 						this.parseCodeChildren(childrens, codeArrayValue);

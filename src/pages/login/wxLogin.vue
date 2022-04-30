@@ -129,8 +129,14 @@ export default {
               load: false,
             },
             ).then((response) => {
-              let jwtData = jwtDecode(response.data.access_token);
-              _this.$store.commit('login', jwtData);
+              uni.setStorage({
+                  key: 'token',
+                  data: response.data.access_token,
+                  success: function () {
+                      let jwtData = jwtDecode(response.data.access_token);
+                      _this.$store.commit('login', jwtData);
+                  }
+              })
             });
           }
       });

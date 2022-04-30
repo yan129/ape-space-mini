@@ -6,11 +6,41 @@ const sm2 = require("sm-crypto").sm2;
 const cipherMode = 1;
 var keypairMap = new Map();
 var uuid;
+// 是否正在刷新token的标志
+let isRefreshing = false;
+// 存储请求的数组
+let cacheRequestList = [];
 
 /** 请求响应统一拦截 */
 uni.addInterceptor('request', {
 	// 请求前
 	invoke(request) {
+		console.log(request)
+		// 判断token是否过期，且不是请求刷新token的接口
+		if (judgeTokenExpired() && !request.url.includes('/ape-article/theme/test')){
+			// 所有请求过来，先判断是否正在刷新token，不是则将 isRefreshing 设置为true，是则将请求缓存到数组中，待刷新完token后，再次请求缓存的接口
+			if (!isRefreshing) {
+				isRefreshing = true;
+				refreshToken();
+				let retry = new Promise((resolve) => {
+					addCacheRequest(() => {
+						resolve(request);
+					})
+				})
+				console.log("ffffff")
+				console.log(cacheRequestList)
+				// return retry;
+			}else {
+				let retry = new Promise((resolve) => {
+					addCacheRequest(() => {
+						resolve(request);
+					})
+				})
+				console.log("cccccccc")
+				console.log(cacheRequestList)
+				// return retry;
+			}
+		}
 		if (request.header.encrypt) {
 			uuid = UUID.v4();
 			keypairMap.set(uuid, sm2.generateKeyPairHex());
@@ -18,6 +48,13 @@ uni.addInterceptor('request', {
 			request.header.sm2uuid = uuid;
 			request.header.browser = 'wx';
 			delete request.header.encrypt;
+		}
+
+		const jwtToken = uni.getStorageSync('token');
+		// 每个接口是否传输token
+		if (jwtToken && request.header.transferToken) {
+			request.header.Authorization = `Bearer ${jwtToken}`
+			delete request.header.transferToken;
 		}
 	},
 	// 响应数据处理
@@ -221,13 +258,13 @@ $http.requestEnd = function(options) {
 // //所有接口数据处理（可在接口里设置不调用此方法）
 // //此方法需要开发者根据各自的接口返回类型修改，以下只是模板
 // $http.dataFactory = async function(res) {
-// 	console.log("接口请求数据", {
-// 		url: res.url,
-// 		resolve: res.response,
-// 		header: res.header,
-// 		data: res.data,
-// 		method: res.method,
-// 	});
+	// console.log("接口请求数据", {
+	// 	url: res.url,
+	// 	resolve: res.response,
+	// 	header: res.header,
+	// 	data: res.data,
+	// 	method: res.method,
+	// });
 // 	if (res.response.statusCode && res.response.statusCode == 200) {
 // 		let httpData = res.response.data;
 // 		if (typeof (httpData) == "string") {
@@ -299,5 +336,46 @@ $http.requestError = function (e) {
 			icon: "none"
 		});
 	}
+}
+
+// 判断token是否过期
+function judgeTokenExpired(){
+	// 时间戳为10位需*1000，时间戳为13位的话不需乘1000
+	// new Date(Number(1651254576*1000)).getTime()
+	const userInfo = uni.getStorageSync('user_info');
+	if (userInfo != "" || userInfo != null || userInfo != undefined) {
+		let curTime = new Date().getTime();
+		let expTime = Number(userInfo.exp * 1000) - curTime;
+		let minutesTime = new Date(expTime).getMinutes();
+		// 过期时间小于5分钟，或者过期时间小于0，即认为token过期
+		if (expTime > 0 && minutesTime < 50 || expTime < 0) {
+			return true;
+		}
+	}
+	return false;
+}
+
+// 添加请求到缓存数组中，数组内容是[function(token){}, function(token){},...]
+function addCacheRequest(cb){
+	cacheRequestList.push(cb);
+}
+
+// 数组中的请求得到新的token之后自执行，用新的token去重新发起请求
+function retryCacheRequest(token){
+	console.log("retry load")
+	cacheRequestList.map(cb => cb(token));
+	cacheRequestList = [];
+}
+
+// 刷新token
+function refreshToken(){
+	$http.get(`/ape-article/theme/test`, null, {load: false}).then((response) => {
+		console.log(response)
+		retryCacheRequest();
+	}).catch((error) => {
+		// location.reload();
+	}).finally(() => {
+		isRefreshing = false;
+	})
 }
 export default $http;
