@@ -15,32 +15,7 @@ let cacheRequestList = [];
 uni.addInterceptor('request', {
 	// 请求前
 	invoke(request) {
-		console.log(request)
-		// 判断token是否过期，且不是请求刷新token的接口
-		if (judgeTokenExpired() && !request.url.includes('/ape-article/theme/test')){
-			// 所有请求过来，先判断是否正在刷新token，不是则将 isRefreshing 设置为true，是则将请求缓存到数组中，待刷新完token后，再次请求缓存的接口
-			if (!isRefreshing) {
-				isRefreshing = true;
-				refreshToken();
-				let retry = new Promise((resolve) => {
-					addCacheRequest(() => {
-						resolve(request);
-					})
-				})
-				console.log("ffffff")
-				console.log(cacheRequestList)
-				// return retry;
-			}else {
-				let retry = new Promise((resolve) => {
-					addCacheRequest(() => {
-						resolve(request);
-					})
-				})
-				console.log("cccccccc")
-				console.log(cacheRequestList)
-				// return retry;
-			}
-		}
+		
 		if (request.header.encrypt) {
 			uuid = UUID.v4();
 			keypairMap.set(uuid, sm2.generateKeyPairHex());
@@ -55,6 +30,32 @@ uni.addInterceptor('request', {
 		if (jwtToken && request.header.transferToken) {
 			request.header.Authorization = `Bearer ${jwtToken}`
 			delete request.header.transferToken;
+		}
+
+		// 判断token是否过期，且不是请求刷新token的接口
+		if (judgeTokenExpired() && !request.url.includes('/ape-user/user/oauth/token')){
+			// 所有请求过来，先判断是否正在刷新token，不是则将 isRefreshing 设置为true，是则将请求缓存到数组中，待刷新完token后，再次请求缓存的接口
+			if (!isRefreshing) {
+				isRefreshing = true;
+				refreshToken(request);
+				let retry = new Promise((resolve) => {
+					addCacheRequest((token) => {
+						request.header.Authorization = token;
+						// 将请求挂起
+						resolve(request);
+					})
+				})
+				return retry;
+			}else {
+				let retry = new Promise((resolve) => {
+					addCacheRequest((token) => {
+						request.header.Authorization = token;
+						// 将请求挂起
+						resolve(request);
+					})
+				})
+				return retry;
+			}
 		}
 	},
 	// 响应数据处理
@@ -107,7 +108,7 @@ function decrypt(encryptData, key) {
   
 // 全局配置的请求域名
 // 腾讯云 106.52.169.191
-let baseUrl = "http://192.168.1.43:8001";
+let baseUrl = "http://192.168.31.111:8001";
 //可以new多个request来支持多个域名请求
 let $http = new request({
 	//接口请求地址
@@ -342,8 +343,9 @@ $http.requestError = function (e) {
 function judgeTokenExpired(){
 	// 时间戳为10位需*1000，时间戳为13位的话不需乘1000
 	// new Date(Number(1651254576*1000)).getTime()
-	const userInfo = uni.getStorageSync('user_info');
-	if (userInfo != "" || userInfo != null || userInfo != undefined) {
+	let userInfo = uni.getStorageSync('user_info');
+	let token = uni.getStorageSync('token');
+	if (!isEmpty(userInfo) && !isEmpty(token)) {
 		let curTime = new Date().getTime();
 		let expTime = Number(userInfo.exp * 1000) - curTime;
 		let minutesTime = new Date(expTime).getMinutes();
@@ -368,14 +370,44 @@ function retryCacheRequest(token){
 }
 
 // 刷新token
-function refreshToken(){
-	$http.get(`/ape-article/theme/test`, null, {load: false}).then((response) => {
-		console.log(response)
-		retryCacheRequest();
+function refreshToken(request){
+	let token = uni.getStorageSync('token');
+	$http.post(`/ape-user/user/oauth/token`, {loginType: 'refresh', token: token}, {header: {"content-type":"application/x-www-form-urlencoded;charset=UTF-8"}, load: false}).then((response) => {
+		if (response.code == 200) {
+			request.header.Authorization = response.data.access_token;
+			retryCacheRequest(response.data.access_token);
+		}else {
+			cacheRequestList = [];
+			uni.showToast({
+				title: response.message,
+				icon: "none"
+			});
+		}
 	}).catch((error) => {
-		// location.reload();
+		cacheRequestList = [];
+		uni.showToast({
+			title: "网络错误，请检查一下网络",
+			icon: "none"
+		});
 	}).finally(() => {
 		isRefreshing = false;
 	})
+}
+
+/* 判断值为空 */
+const isEmpty = (value) => {
+	// 判断字符串
+	if(value === 'undefined' || value === '' || value === 'null' || value === null || value === undefined){
+	  return true;
+	}
+	// 判断数组
+	if(Array.prototype.isPrototypeOf(value) && value.length === 0){
+	  return true;
+	}
+	// 判断对象
+	if(Object.prototype.isPrototypeOf(value) && Object.keys(value).length === 0){
+	  return true;
+	}
+	return false;
 }
 export default $http;
