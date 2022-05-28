@@ -188,18 +188,16 @@ export default {
         });
       }
     },
+
     // 初始化专题数据
     initThemeListData(){
-      this.$http.get(`/ape-article/theme/searchAll/${this.userInfo.id}`, null, {header: {'transferToken': true}, load: false}).then((response) => {
-        // 初始化页面时，从缓存读取 themeIndex
-        let cacheThemeIndex = uni.getStorageSync('themeIndex');
-        if (!this.$commonJs.isEmpty(cacheThemeIndex)){
-          this.themeIndex = cacheThemeIndex;
-        }
-        this.themeList = response.data;
-        // 初始化文章列表数据
-        this.initArticleListData();
+      let cacheCheckThemeData = uni.getStorageSync('themeIndex');
+      this.$http.get("/ape-article/loading/themeArticleData", {uid: this.userInfo.id, tid: cacheCheckThemeData.id}, {header: {'transferToken': false}, load: false}).then((response) => {
+        this.themeList = response.data.themeList;
+        this.themeIndex = cacheCheckThemeData.index;
+        this.$refs.paging.setLocalPaging(response.data.articleList);
       }).catch((error) => {
+        this.$refs.paging.setLocalPaging(false);
         uni.showToast({ title: '请检查网络', icon: "none" });
       })
     },
@@ -211,7 +209,7 @@ export default {
       // 将专题下标设置到缓存，下次直接取出来
       uni.setStorage({
           key: 'themeIndex',
-          data: e.target.value,
+          data: {index: e.target.value, id: _this.pickerThemeData.id},
           success: function () {
             _this.initArticleListData();
           }

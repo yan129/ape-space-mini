@@ -33,7 +33,7 @@ uni.addInterceptor('request', {
 		}
 
 		// 判断token是否过期，且不是请求刷新token的接口
-		if (judgeTokenExpired() && !request.url.includes('/ape-user/user/oauth/token')){
+		if (request.header.transferToken && judgeTokenExpired() && !request.url.includes('/ape-user/user/oauth/token')){
 			// 所有请求过来，先判断是否正在刷新token，不是则将 isRefreshing 设置为true，是则将请求缓存到数组中，待刷新完token后，再次请求缓存的接口
 			if (!isRefreshing) {
 				isRefreshing = true;
@@ -375,6 +375,13 @@ function refreshToken(request){
 	$http.post(`/ape-user/user/oauth/token`, {loginType: 'refresh', token: token}, {header: {"content-type":"application/x-www-form-urlencoded;charset=UTF-8"}, load: false}).then((response) => {
 		if (response.code == 200) {
 			request.header.Authorization = response.data.access_token;
+			uni.setStorage({
+				key: 'token',
+				data: response.data.access_token,
+				success: function () {
+					
+				}
+			})
 			retryCacheRequest(response.data.access_token);
 		}else {
 			cacheRequestList = [];
